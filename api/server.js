@@ -81,6 +81,25 @@ server.put("/api/users/:id", async (req, res) => {
   }
 });
 
+server.delete("/api/users/:id", async (req, res) => {
+  try {
+    const possibleUser = await User.findById(req.params.id);
+    const deleteUser = await User.remove(possibleUser.id);
+    if (!possibleUser) {
+      res
+        .status(404)
+        .json({ message: "The user with the specified ID does not exist" });
+    } else {
+      res.status(200).json(deleteUser);
+    }
+  } catch (err) {
+    res.status(404).json({
+      message: "does not exist",
+      err: err.message,
+    });
+  }
+});
+
 server.get("*", (req, res) => {
   res.send("hell world from express");
 });
