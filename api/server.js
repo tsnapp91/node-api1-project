@@ -37,6 +37,50 @@ server.get("/api/users/:id", async (req, res) => {
   }
 });
 
+server.post("/api/users", async (req, res) => {
+  try {
+    const { name, bio } = req.body;
+    const newUser = await User.insert({ name, bio });
+    if (!name || !bio) {
+      res.status(400).json({
+        message: "Please provide name and bio for the user",
+      });
+    } else {
+      res.status(201).json(newUser);
+    }
+  } catch (err) {
+    res.status(500).json({
+      message: "The user information could not be retrieved",
+      err: err.message,
+    });
+  }
+});
+
+server.put("/api/users/:id", async (req, res) => {
+  try {
+    possibleUser = await User.findById(req.params.id);
+    if (!possibleUser) {
+      res.status(404).json({
+        message: `The user with the specified ID does not exist`,
+      });
+    } else {
+      if (!req.body.name || !req.body.bio) {
+        res.status(400).json({
+          message: "Please provide name and bio for the user",
+        });
+      } else {
+        const updatedUser = await User.update(req.params.id, req.body);
+        res.status(200).json(updatedUser);
+      }
+    }
+  } catch (err) {
+    res.status(500).json({
+      message: "The user information could not be retrieved",
+      err: err.message,
+    });
+  }
+});
+
 server.get("*", (req, res) => {
   res.send("hell world from express");
 });
